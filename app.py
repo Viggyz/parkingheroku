@@ -43,4 +43,4 @@ def disconnect_cv():
 
 if __name__ == "__main__":
     print("[INFO] Starting server at https://localhost:5001")
-    socketio.run(app=app,host='127.0.0.1', port=5001)
+    socketio.run(app=app,host='0.0.0.0', port=5001)
