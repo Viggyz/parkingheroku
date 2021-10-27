@@ -47,8 +47,13 @@
       </div>
       <h5>Parking Lots</h5>
       <div>
-        <table id="lot-table">
-          <tbody id="lots-body"></tbody>
+        <table id="lot-table" border="1">
+          <tbody id="lot-body">
+            <tr>
+              <th>Parking Lot id</th>
+              <th>Status</th>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -98,26 +103,34 @@
     socket.on("toclient", (msg) => {
       image_elem.src = msg.image;
       text_elem.innerHTML = msg.file;
-      if (!flag) {
+      if (document.getElementById("lot-body").children.length < 2) {
         flag = true;
         const lot_body = document.getElementById("lot-body");
+        console.log("no of children" + lot_body.children.length);
         for (const [key, value] of Object.entries(msg.lots)) {
           var row = document.createElement("tr");
           var space_id = document.createElement("td");
           var status = document.createElement("td");
           var id_val = document.createTextNode(key);
-          var status_val = document.createTextNode(value ? "busy" : "free");
+          var status_val = document.createTextNode(
+            parseInt(value) ? "busy" : "free"
+          );
           space_id.appendChild(id_val);
           status.appendChild(status_val);
           row.append(space_id);
           row.append(status);
           lot_body.appendChild(row);
         }
+        console.log("first create here");
       } else {
-        var c = 0;
+        console.log("rewrite here");
+        var c = 1;
         for (const [key, value] of Object.entries(msg.lots)) {
           x = document.getElementById("lot-body").rows[parseInt(c, 10)].cells;
-          x[1].innerHTML = value ? "busy" : "free";
+          console.log(
+            "inner html" + x[0].innerHTML + " inner 2 " + x[1].innerHTML
+          );
+          x[1].innerHTML = parseInt(value) ? "busy" : "free";
           c = c + 1;
         }
       }
@@ -126,18 +139,35 @@
     });
 
     socket.on("TPU_status", (msg) => {
+      var prev_stat = tpu_stat.innerHTML;
       tpu_stat.innerHTML = msg.status;
       tpu_icon.style.backgroundColor =
         msg.status === "Online" ? "green" : "red";
-      if (msg.status === "Offline") {
+      console.log("curr status: " + tpu_stat.innerHTML);
+      if (
+        msg.status === "Online" &&
+        prev_stat === "Offline" &&
+        document.getElementById("lot-body").children.length > 1
+      ) {
         // while (lot_table.firstChild) {
         //   lot_table.removeChild(lot_table.lastChild);
         // }
-        flag = false;
+        console.log("reset");
+        flag = true;
         lot_table.textContent = "";
-        var body = document.createElement("tbody");
-        body.setAttribute("id", "lot-body");
-        lot_table.appendChild(body);
+        var tbody = document.createElement("tbody");
+        tbody.setAttribute("id", "lot-body");
+        var row = document.createElement("tr");
+        var space_id = document.createElement("th");
+        var status = document.createElement("th");
+        var id_val = document.createTextNode("Parking Lot ID");
+        var status_val = document.createTextNode("Status");
+        space_id.appendChild(id_val);
+        status.appendChild(status_val);
+        row.append(space_id);
+        row.append(status);
+        tbody.appendChild(row);
+        lot_table.appendChild(tbody);
       }
     });
   });
