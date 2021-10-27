@@ -21,6 +21,7 @@
     <div style="display: flex; margin: 0 auto; flex-direction: column">
       <h1>PKLot Stream</h1>
       <div style="display: flex; flex-direction: row; -ms-flex-align: baseline">
+        <h3>Busy slots are colored green while free slots are colored red</h3>
         <p><strong>TPU Status:</strong></p>
         <p id="tpu-status">Offline</p>
         <div
@@ -117,6 +118,7 @@
           );
           space_id.appendChild(id_val);
           status.appendChild(status_val);
+          status.style.color = parseInt(value) ? "green" : "red";
           row.append(space_id);
           row.append(status);
           lot_body.appendChild(row);
@@ -132,6 +134,7 @@
           );
           x[1].innerHTML = parseInt(value) ? "busy" : "free";
           c = c + 1;
+          x[1].style.color = parseInt(value) ? "green" : "red";
         }
       }
 
@@ -143,6 +146,7 @@
       tpu_stat.innerHTML = msg.status;
       tpu_icon.style.backgroundColor =
         msg.status === "Online" ? "green" : "red";
+
       console.log("curr status: " + tpu_stat.innerHTML);
       if (
         msg.status === "Online" &&
