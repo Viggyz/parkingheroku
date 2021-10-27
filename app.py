@@ -13,13 +13,8 @@ def index():
 def handle_cv_message(message):
     print("sending to server2web")
     # print(message.image)
-    socketio.emit('toclient', {'image': message['image']},namespace="/web")
+    socketio.emit('toclient', {'image': message['image'], 'lots': message['lots']},namespace="/web")
 
-# @socketio.on('connect')
-# def connect_web():
-#     # print("connected")
-#     # socketio.emit('my response', {'data': 'Connected'})
-#     print('[INFO] Web Client connected: {}'.format(request.sid))
 
 @socketio.on('connect',namespace='/web')
 def connect_web():
@@ -33,14 +28,15 @@ def disconnet_web():
 @socketio.on('connect', namespace='/cv')
 def connect_cv():
     print('[INFO] CV client connected: {}'.format(request.sid))
+    socketio.emit('TPU_status', {'status': 'Online'}, namespace="/web")
 
 
 @socketio.on('disconnect', namespace='/cv')
 def disconnect_cv():
     print('[INFO] CV client disconnected: {}'.format(request.sid))
-
+    socketio.emit('TPU_status', {'status': 'Offline'}, namespace="/web")
 
 
 if __name__ == "__main__":
     print("[INFO] Starting server at https://localhost:5001")
-    socketio.run(app=app,host='0.0.0.0', port=5001)
+    socketio.run(app=app, host='0.0.0.0', port=5001)
