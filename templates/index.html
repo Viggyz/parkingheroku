@@ -10,23 +10,46 @@
     <meta name="author" content="" />
     <title>Test webserver</title>
     <!-- <script src="/socket.io/socket.io.js"></script> -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js" integrity="sha512-zN6KYOtONNTOGXz0RkWX2EpavN9VdIs+2w+To+fhciFv83YA9maUpi2lzZWrOfKXdFIZZomWufBznkyHi3a8oQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"
+      integrity="sha512-zN6KYOtONNTOGXz0RkWX2EpavN9VdIs+2w+To+fhciFv83YA9maUpi2lzZWrOfKXdFIZZomWufBznkyHi3a8oQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
   </head>
   <body>
-    <div style="display: flex;margin: 0 auto; flex-direction: column;">
+    <div style="display: flex; margin: 0 auto; flex-direction: column">
       <h1>PKLot Stream</h1>
-      <div style='display: flex; flex-direction: row; -ms-flex-align: baseline;'>
+      <div style="display: flex; flex-direction: row; -ms-flex-align: baseline">
         <p><strong>TPU Status:</strong></p>
-        <p id="tpu-status">Offline </p> 
-        <div style="margin: auto 0;width: 1rem; height: 1rem; background-color: red; border-radius: 50%; display:inline-flex; position:relative" id="status-icon"></div>
-        
+        <p id="tpu-status">Offline</p>
+        <div
+          style="
+            margin: auto 0;
+            width: 1rem;
+            height: 1rem;
+            background-color: red;
+            border-radius: 50%;
+            display: inline-flex;
+            position: relative;
+          "
+          id="status-icon"
+        ></div>
       </div>
       <div>
-        <img id="streamer-image" src="" width="50%" style='display: block;margin: 0 auto'/>
+        <p id="file-text"></p>
+        <img
+          id="streamer-image"
+          src=""
+          width="50%"
+          style="display: block; margin: 0 auto"
+        />
       </div>
       <h5>Parking Lots</h5>
       <div>
-        <p id="streamer-text"></p>
+        <table id="lot-table">
+          <tbody id="lots-body"></tbody>
+        </table>
       </div>
     </div>
   </body>
@@ -35,12 +58,14 @@
 <script>
   document.addEventListener("DOMContentLoaded", function (event) {
     const image_elem = document.getElementById("streamer-image");
-    const text_elem = document.getElementById("streamer-text");
+    const text_elem = document.getElementById("file-text");
     const tpu_stat = document.getElementById("tpu-status");
     const tpu_icon = document.getElementById("status-icon");
-    var socket = io("/web" , {
-      reconnection: false
-    })
+    const lot_table = document.getElementById("lot-table");
+
+    var socket = io("/web", {
+      reconnection: false,
+    });
 
     // socket.of("/web").on("connect", (socket) => {
     //   console.log(socket)
@@ -71,13 +96,46 @@
     // Update image and text data based on incoming data messages
     socket.on("toclient", (msg) => {
       image_elem.src = msg.image;
-      console.log(msg.lots)
+      text_elem.innerHTML = msg.file;
+      if (!lot_info.hasChildNodes()) {
+        const lot_body = document.getElementById("lot-body");
+        for (const [key, value] of Object.entries(msg.lots)) {
+          var row = document.createElement("tr");
+          var space_id = document.createElement("td");
+          var status = document.createElement("td");
+          var id_val = document.createTextNode(key);
+          var status_val = document.createTextNode(value ? "busy" : "free");
+          space_id.appendChild(id_val);
+          status.appendChild(status_val);
+          row.append(space_id);
+          row.append(status);
+          lot_body.appendChild(row);
+        }
+      } else {
+        var c = 0;
+        for (const [key, value] of Object.entries(msg.lots)) {
+          x = document.getElementById("myTable").rows[parseInt(c, 10)].cells;
+          x[1].innerHTML = value ? "busy" : "free";
+          c = c + 1;
+        }
+      }
+
       // text_elem.innerHTML = msg.text;
     });
 
     socket.on("TPU_status", (msg) => {
-      tpu_stat.innerHTML = msg.status
-      tpu_icon.style.backgroundColor = msg.status==="Online"?"green":"red";   
-    })
+      tpu_stat.innerHTML = msg.status;
+      tpu_icon.style.backgroundColor =
+        msg.status === "Online" ? "green" : "red";
+      if (msg.status === "Offline") {
+        // while (lot_table.firstChild) {
+        //   lot_table.removeChild(lot_table.lastChild);
+        // }
+        lot_table.textContent = "";
+        var body = document.createElement("tbody");
+        body.setAttribute("id", "lot-body");
+        lot_table.appendChild(body);
+      }
+    });
   });
 </script>
