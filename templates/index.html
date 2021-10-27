@@ -9,6 +9,58 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
     <title>Test webserver</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        min-height: 100%;
+        background: #fff;
+        color: #000;
+      }
+      /* sets the body height of the browser, so that backgrounds and div heights work correctly. Color and background will almost certainly be altered; they are just placeholders */
+
+      body {
+        font-size: 1rem;
+        text-rendering: optimizeLegibility;
+      }
+      /* sets the base font size for the document; turns on kerning pairs and ligatures */
+
+      body,
+      ul,
+      ol,
+      dl {
+        margin: 0;
+      }
+      article,
+      aside,
+      audio,
+      footer,
+      header,
+      nav,
+      section,
+      video {
+        display: block;
+      }
+
+      /* ensures that older browsers will display HTML5 elements correctly */
+
+      h1 {
+        font-size: 1.4rem;
+      }
+      /* begins to set up font sizes relative to base rem – h1 has been used as an example */
+
+      p {
+        -ms-word-break: break-all;
+        word-break: break-all;
+        word-break: break-word;
+        -moz-hyphens: auto;
+        -webkit-hyphens: auto;
+        -ms-hyphens: auto;
+        hyphens: auto;
+      }
+    </style>
     <!-- <script src="/socket.io/socket.io.js"></script> -->
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"
@@ -20,8 +72,8 @@
   <body>
     <div style="display: flex; margin: 0 auto; flex-direction: column">
       <h1>PKLot Stream</h1>
+      <h3>Busy slots are colored green while free slots are colored red</h3>
       <div style="display: flex; flex-direction: row; -ms-flex-align: baseline">
-        <h3>Busy slots are colored green while free slots are colored red</h3>
         <p><strong>TPU Status:</strong></p>
         <p id="tpu-status">Offline</p>
         <div
