@@ -63,6 +63,7 @@
     const tpu_icon = document.getElementById("status-icon");
     const lot_table = document.getElementById("lot-table");
 
+    let flag = false;
     var socket = io("/web", {
       reconnection: false,
     });
@@ -97,7 +98,8 @@
     socket.on("toclient", (msg) => {
       image_elem.src = msg.image;
       text_elem.innerHTML = msg.file;
-      if (!document.getElementById("lot-body").hasChildNodes()) {
+      if (!flag) {
+        flag = true;
         const lot_body = document.getElementById("lot-body");
         for (const [key, value] of Object.entries(msg.lots)) {
           var row = document.createElement("tr");
@@ -131,6 +133,7 @@
         // while (lot_table.firstChild) {
         //   lot_table.removeChild(lot_table.lastChild);
         // }
+        flag = false;
         lot_table.textContent = "";
         var body = document.createElement("tbody");
         body.setAttribute("id", "lot-body");
