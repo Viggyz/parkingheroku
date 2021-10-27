@@ -71,13 +71,13 @@
     // Update image and text data based on incoming data messages
     socket.on("toclient", (msg) => {
       image_elem.src = msg.image;
+      console.log(msg.lots)
       // text_elem.innerHTML = msg.text;
     });
 
     socket.on("TPU_status", (msg) => {
       tpu_stat.innerHTML = msg.status
-      tpu_icon.style.backgroundColor = msg.status==="Online"?"green":"red";
-      console.log(msg.lots)
+      tpu_icon.style.backgroundColor = msg.status==="Online"?"green":"red";   
     })
   });
 </script>

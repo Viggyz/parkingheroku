@@ -12,7 +12,6 @@ def index():
 @socketio.on('cvdata',namespace='/cv')
 def handle_cv_message(message):
     print("sending to server2web")
-    # print(message.image)
     socketio.emit('toclient', {'image': message['image'], 'lots': message['lots']},namespace="/web")
 
 
