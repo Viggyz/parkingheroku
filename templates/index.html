@@ -121,15 +121,9 @@
     const tpu_icon = document.getElementById("status-icon");
     const lot_table = document.getElementById("lot-table");
 
-    let flag = false;
     var socket = io("/web", {
       reconnection: false,
     });
-
-    // socket.of("/web").on("connect", (socket) => {
-    //   console.log(socket)
-
-    // });
 
     socket.on("connect", () => {
       console.log("Connected " + socket.id);
@@ -154,12 +148,12 @@
 
     // Update image and text data based on incoming data messages
     socket.on("toclient", (msg) => {
-      // image_elem.src = msg.image;
+      if (tpu_icon.style.backgroundColor !== "green")
+        tpu_icon.style.backgroundColor = "green";
+      image_elem.src = msg.image;
       text_elem.innerHTML = msg.file;
       if (document.getElementById("lot-body").children.length < 2) {
-        flag = true;
         const lot_body = document.getElementById("lot-body");
-        console.log("no of children" + lot_body.children.length);
         for (const [key, value] of Object.entries(msg.lots)) {
           var row = document.createElement("tr");
           var space_id = document.createElement("td");
@@ -170,23 +164,18 @@
           );
           space_id.appendChild(id_val);
           status.appendChild(status_val);
-          status.style.color = parseInt(value) ? "green" : "red";
+          status.style.color = parseInt(value) ? "red" : "green";
           row.append(space_id);
           row.append(status);
           lot_body.appendChild(row);
         }
-        console.log("first create here");
       } else {
-        console.log("rewrite here");
         var c = 1;
         for (const [key, value] of Object.entries(msg.lots)) {
           x = document.getElementById("lot-body").rows[parseInt(c, 10)].cells;
-          console.log(
-            "inner html" + x[0].innerHTML + " inner 2 " + x[1].innerHTML
-          );
           x[1].innerHTML = parseInt(value) ? "busy" : "free";
           c = c + 1;
-          x[1].style.color = parseInt(value) ? "green" : "red";
+          x[1].style.color = parseInt(value) ? "red" : "green";
         }
       }
 
@@ -199,7 +188,6 @@
       tpu_icon.style.backgroundColor =
         msg.status === "Online" ? "green" : "red";
 
-      console.log("curr status: " + tpu_stat.innerHTML);
       if (
         msg.status === "Online" &&
         prev_stat === "Offline" &&
@@ -208,7 +196,6 @@
         // while (lot_table.firstChild) {
         //   lot_table.removeChild(lot_table.lastChild);
         // }
-        console.log("reset");
         flag = true;
         lot_table.textContent = "";
         var tbody = document.createElement("tbody");
