@@ -147,11 +147,10 @@
     });
 
     // Update image and text data based on incoming data messages
-    socket.on("toclient", (msg) => {
+    socket.on("toclientdata", (msg) => {
       if (tpu_icon.style.backgroundColor !== "green")
         tpu_stat.innerHTML = "Online";
       tpu_icon.style.backgroundColor = "green";
-      image_elem.src = msg.image;
       text_elem.innerHTML = msg.file;
       if (document.getElementById("lot-body").children.length < 2) {
         const lot_body = document.getElementById("lot-body");
@@ -202,6 +201,10 @@
       }
 
       // text_elem.innerHTML = msg.text;
+    });
+
+    socket.on("toclientimage", (msg) => {
+      image_elem.src = msg.image;
     });
 
     socket.on("TPU_status", (msg) => {
