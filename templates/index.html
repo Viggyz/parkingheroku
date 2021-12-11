@@ -149,34 +149,56 @@
     // Update image and text data based on incoming data messages
     socket.on("toclient", (msg) => {
       if (tpu_icon.style.backgroundColor !== "green")
-        tpu_icon.style.backgroundColor = "green";
+        tpu_stat.innerHTML = "Online";
+      tpu_icon.style.backgroundColor = "green";
       image_elem.src = msg.image;
       text_elem.innerHTML = msg.file;
       if (document.getElementById("lot-body").children.length < 2) {
         const lot_body = document.getElementById("lot-body");
-        for (const [key, value] of Object.entries(msg.lots)) {
+        msg.lots.forEach((item) => {
           var row = document.createElement("tr");
           var space_id = document.createElement("td");
           var status = document.createElement("td");
-          var id_val = document.createTextNode(key);
+          var id_val = document.createTextNode(item[0]);
           var status_val = document.createTextNode(
-            parseInt(value) ? "busy" : "free"
+            parseInt(item[1]) ? "busy" : "free"
           );
           space_id.appendChild(id_val);
           status.appendChild(status_val);
-          status.style.color = parseInt(value) ? "red" : "green";
+          status.style.color = parseInt(item[1]) ? "red" : "green";
           row.append(space_id);
           row.append(status);
           lot_body.appendChild(row);
-        }
+        });
+        // for (const [key, value] of Object.entries(msg.lots)) {
+        //   var row = document.createElement("tr");
+        //   var space_id = document.createElement("td");
+        //   var status = document.createElement("td");
+        //   var id_val = document.createTextNode(key);
+        //   var status_val = document.createTextNode(
+        //     parseInt(value) ? "busy" : "free"
+        //   );
+        //   space_id.appendChild(id_val);
+        //   status.appendChild(status_val);
+        //   status.style.color = parseInt(value) ? "red" : "green";
+        //   row.append(space_id);
+        //   row.append(status);
+        //   lot_body.appendChild(row);
+        // }
       } else {
         var c = 1;
-        for (const [key, value] of Object.entries(msg.lots)) {
+        msg.lots.forEach((item) => {
           x = document.getElementById("lot-body").rows[parseInt(c, 10)].cells;
-          x[1].innerHTML = parseInt(value) ? "busy" : "free";
+          x[1].innerHTML = parseInt(item[1]) ? "busy" : "free";
           c = c + 1;
-          x[1].style.color = parseInt(value) ? "red" : "green";
-        }
+          x[1].style.color = parseInt(item[1]) ? "red" : "green";
+        });
+        // for (const [key, value] of Object.entries(msg.lots)) {
+        //   x = document.getElementById("lot-body").rows[parseInt(c, 10)].cells;
+        //   x[1].innerHTML = parseInt(value) ? "busy" : "free";
+        //   c = c + 1;
+        //   x[1].style.color = parseInt(value) ? "red" : "green";
+        // }
       }
 
       // text_elem.innerHTML = msg.text;
